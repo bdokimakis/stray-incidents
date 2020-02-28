@@ -1,0 +1,15 @@
+.navbar-nav {
+	align-items: center !important;
+}
+
+.custom-control-label::before, .custom-control-label::after {
+	left: -1.5rem !important;
+}
+
+.hidden {
+	display: none !important;
+}
+
+.text-white .nav-link {
+	color: white !important;
+}

@@ -1,0 +1,32 @@
+.status {
+	color: white;
+	padding: 5px;
+	border-radius: 5px;
+}
+
+.good {
+	background-color: green;
+}
+
+.medium {
+	background-color: blue;
+}
+
+.bad {
+	background-color: red;
+}
+
+.imposed-fine {
+	background-color: yellow;
+	color: initial;
+}
+
+.stray-incidents-wrapper {
+	border: 2px solid; 
+	padding: 20px;
+	border-radius: 5px;
+}
+
+.home #content {
+	padding-top: 2.125rem !important;
+}
