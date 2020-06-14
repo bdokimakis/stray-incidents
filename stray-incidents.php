@@ -7,17 +7,32 @@ Author URI: https://b.dokimakis.gr
 Text Domain: stray-incidents
 */
 
+include 'stray-incident-form.php';
+include 'stray-incidents-table.php';
+
 add_action('wp_enqueue_scripts', 'stray_incidents_enqueue_scripts');
 function stray_incidents_enqueue_scripts() {
 	wp_enqueue_style( 'stray-incidents', plugin_dir_url( __FILE__ ) . 'assets/css/style.css' );
 	
 	if (is_page('form')) {
-		wp_enqueue_style( 'stray-incidents-form', plugin_dir_url( __FILE__ ) . 'assets/css/form.css' );
+		wp_enqueue_style( 'stray-incidents-form', plugin_dir_url( __FILE__ ) . 'assets/css/form.css', array(), time() );
 		wp_enqueue_script( 'jquery-ui-datepicker' );
-		wp_enqueue_style( 'jquery-ui', 'https://code.jquery.com/ui/1.12.1/themes/smoothness/jquery-ui.css' );
+		wp_enqueue_style( 'jquery-ui', plugin_dir_url( __FILE__ ) . 'assets/css/jquery-ui.css' );
 		wp_enqueue_script( 'sweetalert', 'https://cdn.jsdelivr.net/npm/sweetalert2@9' );
 		wp_enqueue_script( 'google-maps-api', 'https://maps.googleapis.com/maps/api/js?key=AIzaSyD45Wfs3NIsezA_SEE8k-hH9j13enJRLfY' );
-		wp_enqueue_script( 'stray-incidents-form', plugin_dir_url( __FILE__ ) . 'assets/js/form.js', array( 'jquery' ), '1.0.0', true );
+		
+		wp_enqueue_script( 'stray-incidents-form-fancybox', 'https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.js', array( 'jquery'), '1.0.0' );
+		wp_enqueue_style( 'stray-incidents-form-fancybox', 'https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.css');
+		
+		wp_enqueue_script( 'stray-incidents-form-dropzone', plugin_dir_url( __FILE__ ) . 'assets/js/dropzone.js', array( 'jquery' ), '1.0.0' );
+		wp_enqueue_style( 'stray-incidents-form-dropzone', plugin_dir_url( __FILE__ ) . 'assets/css/dropzone.css' );
+		
+		wp_enqueue_script( 'stray-incidents-form', plugin_dir_url( __FILE__ ) . 'assets/js/form.js', array( 'jquery' ), time(), true );
+		$params = array(
+		  'ajaxurl' => admin_url('admin-ajax.php'),
+		  'ajax_nonce' => wp_create_nonce('stray-incidents-form'),
+		);
+		wp_localize_script( 'stray-incidents-form', 'ajax_object', $params );
 	}
 	
 	if (is_front_page()) {
@@ -27,6 +42,3 @@ function stray_incidents_enqueue_scripts() {
 		wp_enqueue_script( 'stray-incidents-table', plugin_dir_url( __FILE__ ) . 'assets/js/table.js', array( 'jquery' ), '1.0.0', true );
 	}
 }
-
-include 'stray-incident-form.php';
-include 'stray-incidents-table.php';

@@ -1,0 +1,39 @@
+.required:after {
+	content:" *";
+	color: red;
+}
+
+.row > * {
+	margin-bottom: 10px;
+}
+
+.dz-size {
+	display: none;
+}
+
+.dropzone .dz-preview .dz-image {
+  width: 200px !important;
+  border-radius: 0 !important;
+}
+
+.dropzone .dz-preview .dz-image img {
+	margin: 0 auto;
+	border-radius: 10px;
+}
+
+.dropzone .dz-preview:hover .dz-image img {
+  -webkit-transform: none !important;
+  -moz-transform: none !important;
+  -ms-transform: none !important;
+  -o-transform: none !important;
+  transform: none !important;
+  -webkit-filter: none !important;
+  filter: none !important; 
+}
+
+.dz-image img {
+	display: block !important;
+	cursor: -moz-zoom-in !important;
+    cursor: -webkit-zoom-in !important;
+    cursor: zoom-in !important;
+}

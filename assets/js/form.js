@@ -2,19 +2,95 @@
 	
 	$(document).ready(function() {
 		
+		Dropzone.autoDiscover = false;
+		
+		$(document).on('click', '.dz-image img', function() {
+			$.fancybox.open('<img src="' + $(this).attr('alt') + '">');
+		});
+		
+		let existingImages = [];
+		
+		$(".dropzone").dropzone({
+			init: function() {
+				this.on("sending", function(file, xhr, formData) {
+				  formData.append("security", ajax_object.ajax_nonce);
+				});
+				
+				thisDropzone = this;
+				thisID = $($(this)[0]['element']).attr("id");
+
+				if ($('#' + thisID + '-files').val()) {
+
+					let file_urls = JSON.parse($('#' + $($(this)[0]['element']).attr("id") + '-files').val());
+					
+					existingImages[thisID] = [];
+								
+					$.each(file_urls, function(index, value) {
+						
+						if (value) {
+							let mockFile = { name: value['dataURL'], filepath: value['filepath'] };
+
+							thisDropzone.displayExistingFile(mockFile, value['dataURL']);
+							
+							existingImages[thisID].push({"filepath": value['filepath'], "dataURL": value["dataURL"]});
+						}
+					});
+				}				
+			},
+			success: function(result) {
+				this.filepath = result.filepath;
+			},
+			error: function(file, message) {
+				Swal.fire({
+				  title: 'Σφάλμα',
+				  text: message.data,
+				  icon: 'error',
+				  confirmButtonText: 'ΟΚ'
+				});
+				this.removeFile(file);
+			},
+			thumbnailWidth: 200,
+			thumbnailMethod: "contain",
+			url: ajax_object.ajaxurl + "?action=stray_incident_submission",
+			acceptedFiles: "image/*",
+			addRemoveLinks: true,
+			dictRemoveFileConfirmation: "Είστε σίγουρος;",
+			removedfile: function(file) {
+				$.ajax({
+					url: ajax_object.ajaxurl + '?action=stray_incident_delete_file',
+					type: 'POST',
+					data: {post_id: $("#post_id").val(), meta_key: file.previewElement.parentElement.attributes[0].value + "-files", filepath: file.xhr ? JSON.parse(file.xhr.response).filepath : file.filepath, security: ajax_object.ajax_nonce},
+					success: function (result) {
+						existingImages[file.previewElement.parentElement.attributes[0].value] = $.grep(existingImages[file.previewElement.parentElement.attributes[0].value], function(e){ return e.filepath != file.filepath; });
+						file.previewElement.remove();
+					}
+				});
+			}
+		});
+			
 		$("#stray-incident-form").submit(function(e) {
-			e.preventDefault();    
+			e.preventDefault();
+						
+			$(".photos-files").each(function () {
+				final_value = [];
+				$.each($('#' + $(this).attr('id').split('-files')[0])[0].dropzone.files, function() {
+					final_value.push(JSON.parse($(this)[0].xhr.response));
+				});
+				
+				$(this).val(JSON.stringify(final_value.concat(existingImages[$(this).attr('id').split('-files')[0]])));
+			});
+						
 			var formData = new FormData(this);
 
 			$.ajax({
-				url: '/wp-admin/admin-ajax.php?action=stray_incident_submission',
+				url: ajax_object.ajaxurl + '?action=stray_incident_submission',
 				type: 'POST',
 				data: formData,
-				success: function (data) {
-					if (data.success) {
+				success: function (result) {
+					if (result.success) {
 						Swal.fire({
 							title: 'Επιτυχία!',
-							text: 'Η καταχώρηση ολοκληρώθηκε. Πατήστε ΟΚ για επαναφόρτωση της σελίδας.',
+							text: result.data,
 							icon: 'success',
 							confirmButtonText: 'ΟΚ',
 							onClose: () => {
@@ -28,7 +104,7 @@
 					else {
 						Swal.fire({
 						  title: 'Σφάλμα',
-						  text: 'Προέκυψε κάποιο σφάλμα. Παρακαλούμε προσπαθήστε ξανά.',
+						  text: result.data,
 						  icon: 'error',
 						  confirmButtonText: 'ΟΚ'
 						});
@@ -53,11 +129,11 @@
 			}).then((result) => {
 				if (result.value) {
 					$.ajax({
-						url: '/wp-admin/admin-ajax.php?action=stray_incident_delete',
+						url: ajax_object.ajaxurl + '?action=stray_incident_delete',
 						type: 'POST',
-						data: {post_id : $('#post_id').val()} ,
-						success: function (data) {
-							if (data.success) {
+						data: {post_id : $('#post_id').val(), security: ajax_object.ajax_nonce} ,
+						success: function (result) {
+							if (result.success) {
 								Swal.fire({
 									title: 'Επιτυχία!',
 									text: 'Η καταχώρηση διεγράφη. Πατήστε ΟΚ για επαναφόρτωση της σελίδας.',
@@ -151,6 +227,5 @@
 		});
 		
 		myMarker.setMap(map);
-	}
-		
+	}		
 })( jQuery );

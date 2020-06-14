@@ -1,7 +1,7 @@
 .status {
 	color: white;
-	padding: 5px;
-	border-radius: 5px;
+	padding: 2px 5px;
+    border-radius: 0.4rem;
 }
 
 .good {
@@ -24,7 +24,7 @@
 .stray-incidents-wrapper {
 	border: 2px solid; 
 	padding: 20px;
-	border-radius: 5px;
+    border-radius: 0.4rem;
 }
 
 .home #content {
