@@ -7,14 +7,15 @@ Author URI: https://b.dokimakis.gr
 Text Domain: stray-incidents
 */
 
-include 'stray-incident-form.php';
+include 'stray-incidents-form.php';
 include 'stray-incidents-table.php';
+include 'stray-incidents-areas.php';
 
 add_action('wp_enqueue_scripts', 'stray_incidents_enqueue_scripts');
 function stray_incidents_enqueue_scripts() {
 	wp_enqueue_style( 'stray-incidents', plugin_dir_url( __FILE__ ) . 'assets/css/style.css' );
 	
-	if (is_page('form')) {
+	if (is_page('forma-peristatikou')) {
 		wp_enqueue_style( 'stray-incidents-form', plugin_dir_url( __FILE__ ) . 'assets/css/form.css', array(), time() );
 		wp_enqueue_script( 'jquery-ui-datepicker' );
 		wp_enqueue_style( 'jquery-ui', plugin_dir_url( __FILE__ ) . 'assets/css/jquery-ui.css' );
@@ -33,6 +34,17 @@ function stray_incidents_enqueue_scripts() {
 		  'ajax_nonce' => wp_create_nonce('stray-incidents-form'),
 		);
 		wp_localize_script( 'stray-incidents-form', 'ajax_object', $params );
+	}
+	
+	if (is_page('perioxes')) {
+		wp_enqueue_script( 'sweetalert', 'https://cdn.jsdelivr.net/npm/sweetalert2@9' );
+		wp_enqueue_script( 'stray-incidents-areas', plugin_dir_url( __FILE__ ) . 'assets/js/areas.js', array( 'jquery' ), time(), true );
+		
+		$params = array(
+		  'ajaxurl' => admin_url('admin-ajax.php'),
+		  'ajax_nonce' => wp_create_nonce('stray-incidents-areas'),
+		);
+		wp_localize_script( 'stray-incidents-areas', 'ajax_object', $params );
 	}
 	
 	if (is_front_page()) {

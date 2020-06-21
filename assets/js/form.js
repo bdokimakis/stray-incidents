@@ -51,24 +51,32 @@
 			},
 			thumbnailWidth: 200,
 			thumbnailMethod: "contain",
-			url: ajax_object.ajaxurl + "?action=stray_incident_submission",
+			url: ajax_object.ajaxurl + "?action=stray_incidents_submission",
 			acceptedFiles: "image/*",
 			addRemoveLinks: true,
 			dictRemoveFileConfirmation: "Είστε σίγουρος;",
 			removedfile: function(file) {
 				$.ajax({
-					url: ajax_object.ajaxurl + '?action=stray_incident_delete_file',
+					url: ajax_object.ajaxurl + '?action=stray_incidents_delete_file',
 					type: 'POST',
 					data: {post_id: $("#post_id").val(), meta_key: file.previewElement.parentElement.attributes[0].value + "-files", filepath: file.xhr ? JSON.parse(file.xhr.response).filepath : file.filepath, security: ajax_object.ajax_nonce},
 					success: function (result) {
 						existingImages[file.previewElement.parentElement.attributes[0].value] = $.grep(existingImages[file.previewElement.parentElement.attributes[0].value], function(e){ return e.filepath != file.filepath; });
 						file.previewElement.remove();
-					}
+					},
+					error: function(error) {
+						Swal.fire({
+						  title: 'Σφάλμα',
+						  text: 'Προέκυψε κάποιο σφάλμα. Παρακαλούμε φορτώστε εκ νέου τη σελίδα και προσπαθήστε ξανά.',
+						  icon: 'error',
+						  confirmButtonText: 'ΟΚ'
+						});
+					},
 				});
 			}
 		});
 			
-		$("#stray-incident-form").submit(function(e) {
+		$("#stray-incidents-form").submit(function(e) {
 			e.preventDefault();
 						
 			$(".photos-files").each(function () {
@@ -83,7 +91,7 @@
 			var formData = new FormData(this);
 
 			$.ajax({
-				url: ajax_object.ajaxurl + '?action=stray_incident_submission',
+				url: ajax_object.ajaxurl + '?action=stray_incidents_submission',
 				type: 'POST',
 				data: formData,
 				success: function (result) {
@@ -110,6 +118,14 @@
 						});
 					}
 				},
+				error: function(error) {
+					Swal.fire({
+					  title: 'Σφάλμα',
+					  text: 'Προέκυψε κάποιο σφάλμα. Παρακαλούμε φορτώστε εκ νέου τη σελίδα και προσπαθήστε ξανά.',
+					  icon: 'error',
+					  confirmButtonText: 'ΟΚ'
+					});
+				},
 				cache: false,
 				contentType: false,
 				processData: false
@@ -129,7 +145,7 @@
 			}).then((result) => {
 				if (result.value) {
 					$.ajax({
-						url: ajax_object.ajaxurl + '?action=stray_incident_delete',
+						url: ajax_object.ajaxurl + '?action=stray_incidents_delete',
 						type: 'POST',
 						data: {post_id : $('#post_id').val(), security: ajax_object.ajax_nonce} ,
 						success: function (result) {
